@@ -35,6 +35,23 @@ $posts = $stmt->fetchAll();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    <style>
+        .nav-sidebar .nav-item .nav-link.active {
+            background-color: #6c757d !important;
+            color: #fff !important;
+        }
+        .nav-sidebar .nav-item .nav-link.active:hover {
+            background-color: #5a6268 !important;
+        }
+        .btn-info {
+            background-color: #17a2b8 !important;
+            border-color: #17a2b8 !important;
+        }
+        .btn-info:hover {
+            background-color: #138496 !important;
+            border-color: #117a8b !important;
+        }
+    </style>
 </head>
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
@@ -100,11 +117,9 @@ $posts = $stmt->fetchAll();
                             <h1 class="m-0">Dashboard</h1>
                         </div>
                         <div class="col-sm-6">
-                            <div class="float-sm-right">
-                                <a href="create_post.php" class="btn btn-primary">
-                                    <i class="fas fa-plus"></i> Create New Post
-                                </a>
-                            </div>
+                            <a href="create_post.php" class="btn btn-info float-right">
+                                <i class="fas fa-plus"></i> Tambah Postingan Baru
+                            </a>
                         </div>
                     </div>
                 </div>

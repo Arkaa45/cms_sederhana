@@ -143,7 +143,7 @@ $posts = $stmt->fetchAll();
                             <div class="input-group mb-4">
                                 <input type="text" name="search" class="form-control" placeholder="Cari postingan..." value="<?php echo htmlspecialchars($search); ?>">
                                 <div class="input-group-append">
-                                    <button type="submit" class="btn btn-primary">
+                                    <button type="submit" class="btn btn-secondary">
                                         <i class="fas fa-search"></i>
                                     </button>
                                     <?php if(!empty($search)): ?>

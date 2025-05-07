@@ -12,16 +12,12 @@ if(isset($_POST['create'])) {
     $title = $_POST['title'];
     $content = $_POST['content'];
     
-    if(empty($title) || empty($content)) {
-        $error = "Please fill in all fields";
+    $stmt = $pdo->prepare("INSERT INTO posts (user_id, title, content) VALUES (?, ?, ?)");
+    if($stmt->execute([$_SESSION['user_id'], $title, $content])) {
+        header("Location: dashboard.php");
+        exit();
     } else {
-        $stmt = $pdo->prepare("INSERT INTO posts (title, content, user_id, created_at) VALUES (?, ?, ?, NOW())");
-        if($stmt->execute([$title, $content, $_SESSION['user_id']])) {
-            header("Location: dashboard.php");
-            exit();
-        } else {
-            $error = "Failed to create post";
-        }
+        $error = "Gagal membuat postingan";
     }
 }
 ?>
@@ -30,7 +26,7 @@ if(isset($_POST['create'])) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Create Post - Simple CMS</title>
+    <title>Tambah Postingan - Simple CMS</title>
 
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -38,6 +34,23 @@ if(isset($_POST['create'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    <style>
+        .nav-sidebar .nav-item .nav-link.active {
+            background-color: #6c757d !important;
+            color: #fff !important;
+        }
+        .nav-sidebar .nav-item .nav-link.active:hover {
+            background-color: #5a6268 !important;
+        }
+        .btn-info {
+            background-color: #17a2b8 !important;
+            border-color: #17a2b8 !important;
+        }
+        .btn-info:hover {
+            background-color: #138496 !important;
+            border-color: #117a8b !important;
+        }
+    </style>
 </head>
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
@@ -49,7 +62,7 @@ if(isset($_POST['create'])) {
                     <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
                 </li>
                 <li class="nav-item d-none d-sm-inline-block">
-                    <a href="../index.php" class="nav-link">Home</a>
+                    <a href="../index.php" class="nav-link">Beranda</a>
                 </li>
             </ul>
 
@@ -57,7 +70,7 @@ if(isset($_POST['create'])) {
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
                     <a class="nav-link" href="../logout.php">
-                        <i class="fas fa-sign-out-alt"></i> Logout
+                        <i class="fas fa-sign-out-alt"></i> Keluar
                     </a>
                 </li>
             </ul>
@@ -79,7 +92,7 @@ if(isset($_POST['create'])) {
                         <li class="nav-item">
                             <a href="../index.php" class="nav-link">
                                 <i class="nav-icon fas fa-home"></i>
-                                <p>Home</p>
+                                <p>Beranda</p>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -100,7 +113,7 @@ if(isset($_POST['create'])) {
                 <div class="container-fluid">
                     <div class="row mb-2">
                         <div class="col-sm-6">
-                            <h1 class="m-0">Create New Post</h1>
+                            <h1 class="m-0">Tambah Postingan Baru</h1>
                         </div>
                     </div>
                 </div>
@@ -111,9 +124,9 @@ if(isset($_POST['create'])) {
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="card card-primary">
+                            <div class="card card-outline card-info">
                                 <div class="card-header">
-                                    <h3 class="card-title">Post Details</h3>
+                                    <h3 class="card-title">Form Postingan</h3>
                                 </div>
                                 <div class="card-body">
                                     <?php if(isset($error)): ?>
@@ -124,19 +137,19 @@ if(isset($_POST['create'])) {
 
                                     <form method="POST">
                                         <div class="form-group">
-                                            <label for="title">Title</label>
+                                            <label for="title">Judul</label>
                                             <input type="text" class="form-control" id="title" name="title" required>
                                         </div>
                                         <div class="form-group">
-                                            <label for="content">Content</label>
+                                            <label for="content">Konten</label>
                                             <textarea class="form-control" id="content" name="content" rows="10" required></textarea>
                                         </div>
                                         <div class="form-group">
-                                            <button type="submit" name="create" class="btn btn-primary">
-                                                <i class="fas fa-save"></i> Create Post
+                                            <button type="submit" name="create" class="btn btn-info">
+                                                <i class="fas fa-save"></i> Simpan Postingan
                                             </button>
                                             <a href="dashboard.php" class="btn btn-default">
-                                                <i class="fas fa-times"></i> Cancel
+                                                <i class="fas fa-arrow-left"></i> Kembali
                                             </a>
                                         </div>
                                     </form>
