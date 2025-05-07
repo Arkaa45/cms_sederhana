@@ -1,46 +1,26 @@
 <?php
 session_start();
-require_once '../config/database.php';
-
-// Check if user is logged in
-if(!isset($_SESSION['user_id'])) {
-    header("Location: ../login.php");
-    exit();
-}
+require_once 'config/database.php';
 
 // Check if post ID is provided
 if(!isset($_GET['id'])) {
-    header("Location: dashboard.php");
+    header("Location: posts.php");
     exit();
 }
 
 $post_id = $_GET['id'];
 
-// Fetch post details
-$stmt = $pdo->prepare("SELECT * FROM posts WHERE id = ? AND user_id = ?");
-$stmt->execute([$post_id, $_SESSION['user_id']]);
+// Fetch post details with author information
+$stmt = $pdo->prepare("SELECT posts.*, users.username 
+                      FROM posts 
+                      JOIN users ON posts.user_id = users.id 
+                      WHERE posts.id = ?");
+$stmt->execute([$post_id]);
 $post = $stmt->fetch();
 
 if(!$post) {
-    header("Location: dashboard.php");
+    header("Location: posts.php");
     exit();
-}
-
-if(isset($_POST['update'])) {
-    $title = $_POST['title'];
-    $content = $_POST['content'];
-    
-    if(empty($title) || empty($content)) {
-        $error = "Please fill in all fields";
-    } else {
-        $stmt = $pdo->prepare("UPDATE posts SET title = ?, content = ? WHERE id = ? AND user_id = ?");
-        if($stmt->execute([$title, $content, $post_id, $_SESSION['user_id']])) {
-            header("Location: dashboard.php");
-            exit();
-        } else {
-            $error = "Failed to update post";
-        }
-    }
 }
 ?>
 <!DOCTYPE html>
@@ -48,7 +28,7 @@ if(isset($_POST['update'])) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Edit Post - Simple CMS</title>
+    <title><?php echo htmlspecialchars($post['title']); ?> - Simple CMS</title>
 
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -67,24 +47,45 @@ if(isset($_POST['update'])) {
                     <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
                 </li>
                 <li class="nav-item d-none d-sm-inline-block">
-                    <a href="../index.php" class="nav-link">Home</a>
+                    <a href="index.php" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item d-none d-sm-inline-block">
+                    <a href="posts.php" class="nav-link">Postingan</a>
                 </li>
             </ul>
 
             <!-- Right navbar links -->
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="../logout.php">
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </a>
-                </li>
+                <?php if(isset($_SESSION['user_id'])): ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="admin/dashboard.php">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="logout.php">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </li>
+                <?php else: ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.php">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="register.php">
+                            <i class="fas fa-user-plus"></i> Register
+                        </a>
+                    </li>
+                <?php endif; ?>
             </ul>
         </nav>
 
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
-            <a href="../index.php" class="brand-link">
+            <a href="index.php" class="brand-link">
                 <img src="https://adminlte.io/themes/v3/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
                 <span class="brand-text font-weight-light">Simple CMS</span>
             </a>
@@ -95,15 +96,15 @@ if(isset($_POST['update'])) {
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                         <li class="nav-item">
-                            <a href="../index.php" class="nav-link">
+                            <a href="index.php" class="nav-link">
                                 <i class="nav-icon fas fa-home"></i>
                                 <p>Home</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="dashboard.php" class="nav-link">
-                                <i class="nav-icon fas fa-tachometer-alt"></i>
-                                <p>Dashboard</p>
+                            <a href="posts.php" class="nav-link active">
+                                <i class="nav-icon fas fa-file-alt"></i>
+                                <p>Postingan</p>
                             </a>
                         </li>
                     </ul>
@@ -118,7 +119,7 @@ if(isset($_POST['update'])) {
                 <div class="container-fluid">
                     <div class="row mb-2">
                         <div class="col-sm-6">
-                            <h1 class="m-0">Edit Post</h1>
+                            <h1 class="m-0">Detail Postingan</h1>
                         </div>
                     </div>
                 </div>
@@ -129,35 +130,27 @@ if(isset($_POST['update'])) {
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="card card-primary">
+                            <div class="card card-outline card-primary">
                                 <div class="card-header">
-                                    <h3 class="card-title">Post Details</h3>
+                                    <h3 class="card-title"><?php echo htmlspecialchars($post['title']); ?></h3>
+                                    <div class="card-tools">
+                                        <span class="badge badge-primary">
+                                            <i class="fas fa-user"></i> <?php echo htmlspecialchars($post['username']); ?>
+                                        </span>
+                                        <span class="badge badge-info">
+                                            <i class="fas fa-calendar"></i> <?php echo date('d M Y', strtotime($post['created_at'])); ?>
+                                        </span>
+                                    </div>
                                 </div>
                                 <div class="card-body">
-                                    <?php if(isset($error)): ?>
-                                        <div class="alert alert-danger">
-                                            <i class="icon fas fa-ban"></i> <?php echo $error; ?>
-                                        </div>
-                                    <?php endif; ?>
-
-                                    <form method="POST">
-                                        <div class="form-group">
-                                            <label for="title">Title</label>
-                                            <input type="text" class="form-control" id="title" name="title" value="<?php echo htmlspecialchars($post['title']); ?>" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="content">Content</label>
-                                            <textarea class="form-control" id="content" name="content" rows="10" required><?php echo htmlspecialchars($post['content']); ?></textarea>
-                                        </div>
-                                        <div class="form-group">
-                                            <button type="submit" name="update" class="btn btn-primary">
-                                                <i class="fas fa-save"></i> Update Post
-                                            </button>
-                                            <a href="dashboard.php" class="btn btn-default">
-                                                <i class="fas fa-times"></i> Cancel
-                                            </a>
-                                        </div>
-                                    </form>
+                                    <div class="post-content">
+                                        <?php echo nl2br(htmlspecialchars($post['content'])); ?>
+                                    </div>
+                                    <div class="mt-4">
+                                        <a href="posts.php" class="btn btn-default">
+                                            <i class="fas fa-arrow-left"></i> Kembali ke Daftar Postingan
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -171,7 +164,7 @@ if(isset($_POST['update'])) {
             <div class="float-right d-none d-sm-block">
                 <b>Version</b> 1.0.0
             </div>
-            <strong>Copyright &copy; 2024 <a href="../index.php">Simple CMS</a>.</strong> All rights reserved.
+            <strong>Copyright &copy; 2024 <a href="index.php">Simple CMS</a>.</strong> All rights reserved.
         </footer>
     </div>
 

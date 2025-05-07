@@ -1,13 +1,20 @@
 <?php
 session_start();
 require_once 'config/database.php';
+
+// Fetch all posts with author information
+$stmt = $pdo->query("SELECT posts.*, users.username 
+                     FROM posts 
+                     JOIN users ON posts.user_id = users.id 
+                     ORDER BY posts.created_at DESC");
+$posts = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Simple CMS</title>
+    <title>Postingan - Simple CMS</title>
 
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -75,13 +82,13 @@ require_once 'config/database.php';
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                         <li class="nav-item">
-                            <a href="index.php" class="nav-link active">
+                            <a href="index.php" class="nav-link">
                                 <i class="nav-icon fas fa-home"></i>
                                 <p>Home</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="posts.php" class="nav-link">
+                            <a href="posts.php" class="nav-link active">
                                 <i class="nav-icon fas fa-file-alt"></i>
                                 <p>Postingan</p>
                             </a>
@@ -98,7 +105,7 @@ require_once 'config/database.php';
                 <div class="container-fluid">
                     <div class="row mb-2">
                         <div class="col-sm-6">
-                            <h1 class="m-0">Welcome to Simple CMS</h1>
+                            <h1 class="m-0">Semua Postingan</h1>
                         </div>
                     </div>
                 </div>
@@ -108,39 +115,34 @@ require_once 'config/database.php';
             <div class="content">
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-md-8">
-                            <?php
-                            // Fetch recent posts
-                            $stmt = $pdo->query("SELECT * FROM posts ORDER BY created_at DESC LIMIT 5");
-                            $posts = $stmt->fetchAll();
-                            
-                            if($posts): ?>
-                                <h2 class="mt-4">Recent Posts</h2>
+                        <div class="col-md-12">
+                            <?php if(empty($posts)): ?>
+                                <div class="alert alert-info">
+                                    <i class="icon fas fa-info"></i> Belum ada postingan yang tersedia.
+                                </div>
+                            <?php else: ?>
                                 <?php foreach($posts as $post): ?>
                                     <div class="card card-outline card-primary">
                                         <div class="card-header">
                                             <h3 class="card-title"><?php echo htmlspecialchars($post['title']); ?></h3>
                                             <div class="card-tools">
-                                                <span class="badge badge-primary"><?php echo date('M d, Y', strtotime($post['created_at'])); ?></span>
+                                                <span class="badge badge-primary">
+                                                    <i class="fas fa-user"></i> <?php echo htmlspecialchars($post['username']); ?>
+                                                </span>
+                                                <span class="badge badge-info">
+                                                    <i class="fas fa-calendar"></i> <?php echo date('d M Y', strtotime($post['created_at'])); ?>
+                                                </span>
                                             </div>
                                         </div>
                                         <div class="card-body">
                                             <p><?php echo substr(htmlspecialchars($post['content']), 0, 200) . '...'; ?></p>
-                                            <a href="post.php?id=<?php echo $post['id']; ?>" class="btn btn-primary">Read More</a>
+                                            <a href="post.php?id=<?php echo $post['id']; ?>" class="btn btn-primary">
+                                                <i class="fas fa-eye"></i> Baca Selengkapnya
+                                            </a>
                                         </div>
                                     </div>
-                                <?php endforeach;
-                            endif; ?>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="card card-outline card-info">
-                                <div class="card-header">
-                                    <h3 class="card-title">About</h3>
-                                </div>
-                                <div class="card-body">
-                                    <p>This is a simple CMS built with PHP and MySQL. You can create, edit, and manage your content easily.</p>
-                                </div>
-                            </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
