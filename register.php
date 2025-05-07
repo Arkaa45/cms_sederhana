@@ -53,7 +53,7 @@ if(isset($_POST['register'])) {
 
         <div class="card card-outline card-primary">
             <div class="card-header text-center">
-                <a href="index.php" class="h1">Register</a>
+                <a href="index.php" class="h1">Daftar</a>
             </div>
             <div class="card-body">
                 <?php if(isset($error)): ?>
@@ -64,7 +64,7 @@ if(isset($_POST['register'])) {
 
                 <form method="POST">
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" name="username" placeholder="Username" required>
+                        <input type="text" class="form-control" name="username" placeholder="Nama Pengguna" required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-user"></span>
@@ -72,7 +72,7 @@ if(isset($_POST['register'])) {
                         </div>
                     </div>
                     <div class="input-group mb-3">
-                        <input type="password" class="form-control" name="password" placeholder="Password" required>
+                        <input type="password" class="form-control" name="password" placeholder="Kata Sandi" required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-lock"></span>
@@ -80,7 +80,7 @@ if(isset($_POST['register'])) {
                         </div>
                     </div>
                     <div class="input-group mb-3">
-                        <input type="password" class="form-control" name="confirm_password" placeholder="Confirm password" required>
+                        <input type="password" class="form-control" name="confirm_password" placeholder="Konfirmasi Kata Sandi" required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-lock"></span>
@@ -89,13 +89,13 @@ if(isset($_POST['register'])) {
                     </div>
                     <div class="row">
                         <div class="col-12">
-                            <button type="submit" name="register" class="btn btn-primary btn-block">Register</button>
+                            <button type="submit" name="register" class="btn btn-primary btn-block">Daftar</button>
                         </div>
                     </div>
                 </form>
 
                 <p class="mb-1 mt-3 text-center">
-                    <a href="login.php">I already have an account</a>
+                    <a href="login.php">Saya sudah memiliki akun</a>
                 </p>
             </div>
         </div>

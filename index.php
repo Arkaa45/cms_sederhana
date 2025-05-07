@@ -1,6 +1,27 @@
 <?php
 session_start();
 require_once 'config/database.php';
+
+// Handle search
+$search = isset($_GET['search']) ? $_GET['search'] : '';
+$where = '';
+$params = [];
+
+if (!empty($search)) {
+    $where = "WHERE posts.title LIKE ? OR posts.content LIKE ? OR users.username LIKE ?";
+    $params = ["%$search%", "%$search%", "%$search%"];
+}
+
+// Fetch recent posts
+$query = "SELECT posts.*, users.username 
+          FROM posts 
+          JOIN users ON posts.user_id = users.id 
+          $where
+          ORDER BY posts.created_at DESC 
+          LIMIT 5";
+$stmt = $pdo->prepare($query);
+$stmt->execute($params);
+$posts = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -15,6 +36,15 @@ require_once 'config/database.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    <style>
+        .nav-sidebar .nav-item .nav-link.active {
+            background-color: #6c757d !important;
+            color: #fff !important;
+        }
+        .nav-sidebar .nav-item .nav-link.active:hover {
+            background-color: #5a6268 !important;
+        }
+    </style>
 </head>
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
@@ -26,7 +56,7 @@ require_once 'config/database.php';
                     <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
                 </li>
                 <li class="nav-item d-none d-sm-inline-block">
-                    <a href="index.php" class="nav-link">Home</a>
+                    <a href="index.php" class="nav-link">Beranda</a>
                 </li>
                 <li class="nav-item d-none d-sm-inline-block">
                     <a href="posts.php" class="nav-link">Postingan</a>
@@ -77,7 +107,7 @@ require_once 'config/database.php';
                         <li class="nav-item">
                             <a href="index.php" class="nav-link active">
                                 <i class="nav-icon fas fa-home"></i>
-                                <p>Home</p>
+                                <p>Beranda</p>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -98,7 +128,7 @@ require_once 'config/database.php';
                 <div class="container-fluid">
                     <div class="row mb-2">
                         <div class="col-sm-6">
-                            <h1 class="m-0">Welcome to Simple CMS</h1>
+                            <h1 class="m-0">Selamat Datang di Simple CMS</h1>
                         </div>
                     </div>
                 </div>
@@ -109,36 +139,61 @@ require_once 'config/database.php';
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-8">
-                            <?php
-                            // Fetch recent posts
-                            $stmt = $pdo->query("SELECT * FROM posts ORDER BY created_at DESC LIMIT 5");
-                            $posts = $stmt->fetchAll();
-                            
-                            if($posts): ?>
-                                <h2 class="mt-4">Recent Posts</h2>
+                            <!-- Search Form -->
+                            <div class="input-group mb-4">
+                                <input type="text" name="search" class="form-control" placeholder="Cari postingan..." value="<?php echo htmlspecialchars($search); ?>">
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                    <?php if(!empty($search)): ?>
+                                        <a href="index.php" class="btn btn-default">
+                                            <i class="fas fa-times"></i>
+                                        </a>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+
+                            <?php if(!empty($search)): ?>
+                                <div class="alert alert-info">
+                                    <i class="icon fas fa-info"></i> Menampilkan hasil pencarian untuk: "<?php echo htmlspecialchars($search); ?>"
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if($posts): ?>
+                                <h2 class="mt-4"><?php echo !empty($search) ? 'Hasil Pencarian' : 'Postingan Terbaru'; ?></h2>
                                 <?php foreach($posts as $post): ?>
                                     <div class="card card-outline card-primary">
                                         <div class="card-header">
                                             <h3 class="card-title"><?php echo htmlspecialchars($post['title']); ?></h3>
                                             <div class="card-tools">
-                                                <span class="badge badge-primary"><?php echo date('M d, Y', strtotime($post['created_at'])); ?></span>
+                                                <span class="badge badge-primary">
+                                                    <i class="fas fa-user"></i> <?php echo htmlspecialchars($post['username']); ?>
+                                                </span>
+                                                <span class="badge badge-info">
+                                                    <i class="fas fa-calendar"></i> <?php echo date('M d, Y', strtotime($post['created_at'])); ?>
+                                                </span>
                                             </div>
                                         </div>
                                         <div class="card-body">
                                             <p><?php echo substr(htmlspecialchars($post['content']), 0, 200) . '...'; ?></p>
-                                            <a href="post.php?id=<?php echo $post['id']; ?>" class="btn btn-primary">Read More</a>
+                                            <a href="post.php?id=<?php echo $post['id']; ?>" class="btn btn-primary">Baca Selengkapnya</a>
                                         </div>
                                     </div>
                                 <?php endforeach;
-                            endif; ?>
+                            else: ?>
+                                <div class="alert alert-info">
+                                    <i class="icon fas fa-info"></i> <?php echo !empty($search) ? 'Tidak ditemukan postingan yang sesuai dengan pencarian.' : 'Belum ada postingan yang tersedia.'; ?>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <div class="col-md-4">
                             <div class="card card-outline card-info">
                                 <div class="card-header">
-                                    <h3 class="card-title">About</h3>
+                                    <h3 class="card-title">Tentang</h3>
                                 </div>
                                 <div class="card-body">
-                                    <p>This is a simple CMS built with PHP and MySQL. You can create, edit, and manage your content easily.</p>
+                                    <p>Ini adalah CMS sederhana yang dibangun dengan PHP dan MySQL. Anda dapat membuat, mengedit, dan mengelola konten Anda dengan mudah.</p>
                                 </div>
                             </div>
                         </div>

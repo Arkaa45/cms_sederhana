@@ -42,7 +42,7 @@ if(isset($_POST['login'])) {
         <!-- /.login-logo -->
         <div class="card card-outline card-primary">
             <div class="card-header text-center">
-                <a href="index.php" class="h1">Login</a>
+                <a href="index.php" class="h1">Masuk</a>
             </div>
             <div class="card-body">
                 <?php if(isset($error)): ?>
@@ -53,7 +53,7 @@ if(isset($_POST['login'])) {
 
                 <form method="POST">
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" name="username" placeholder="Username" required>
+                        <input type="text" class="form-control" name="username" placeholder="Nama Pengguna" required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-user"></span>
@@ -61,7 +61,7 @@ if(isset($_POST['login'])) {
                         </div>
                     </div>
                     <div class="input-group mb-3">
-                        <input type="password" class="form-control" name="password" placeholder="Password" required>
+                        <input type="password" class="form-control" name="password" placeholder="Kata Sandi" required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-lock"></span>
@@ -70,13 +70,13 @@ if(isset($_POST['login'])) {
                     </div>
                     <div class="row">
                         <div class="col-12">
-                            <button type="submit" name="login" class="btn btn-primary btn-block">Sign In</button>
+                            <button type="submit" name="login" class="btn btn-primary btn-block">Masuk</button>
                         </div>
                     </div>
                 </form>
 
                 <p class="mb-1 mt-3 text-center">
-                    <a href="register.php">Register a new account</a>
+                    <a href="register.php">Daftar akun baru</a>
                 </p>
             </div>
         </div>

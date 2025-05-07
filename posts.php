@@ -2,11 +2,24 @@
 session_start();
 require_once 'config/database.php';
 
+// Handle search
+$search = isset($_GET['search']) ? $_GET['search'] : '';
+$where = '';
+$params = [];
+
+if (!empty($search)) {
+    $where = "WHERE posts.title LIKE ? OR posts.content LIKE ? OR users.username LIKE ?";
+    $params = ["%$search%", "%$search%", "%$search%"];
+}
+
 // Fetch all posts with author information
-$stmt = $pdo->query("SELECT posts.*, users.username 
-                     FROM posts 
-                     JOIN users ON posts.user_id = users.id 
-                     ORDER BY posts.created_at DESC");
+$query = "SELECT posts.*, users.username 
+          FROM posts 
+          JOIN users ON posts.user_id = users.id 
+          $where
+          ORDER BY posts.created_at DESC";
+$stmt = $pdo->prepare($query);
+$stmt->execute($params);
 $posts = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>
@@ -22,6 +35,15 @@ $posts = $stmt->fetchAll();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    <style>
+        .nav-sidebar .nav-item .nav-link.active {
+            background-color: #6c757d !important;
+            color: #fff !important;
+        }
+        .nav-sidebar .nav-item .nav-link.active:hover {
+            background-color: #5a6268 !important;
+        }
+    </style>
 </head>
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
@@ -33,7 +55,7 @@ $posts = $stmt->fetchAll();
                     <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
                 </li>
                 <li class="nav-item d-none d-sm-inline-block">
-                    <a href="index.php" class="nav-link">Home</a>
+                    <a href="index.php" class="nav-link">Beranda</a>
                 </li>
                 <li class="nav-item d-none d-sm-inline-block">
                     <a href="posts.php" class="nav-link">Postingan</a>
@@ -84,7 +106,7 @@ $posts = $stmt->fetchAll();
                         <li class="nav-item">
                             <a href="index.php" class="nav-link">
                                 <i class="nav-icon fas fa-home"></i>
-                                <p>Home</p>
+                                <p>Beranda</p>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -116,9 +138,30 @@ $posts = $stmt->fetchAll();
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-12">
+                            <!-- Search Form -->
+                            <div class="input-group mb-4">
+                                <input type="text" name="search" class="form-control" placeholder="Cari postingan..." value="<?php echo htmlspecialchars($search); ?>">
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                    <?php if(!empty($search)): ?>
+                                        <a href="posts.php" class="btn btn-default">
+                                            <i class="fas fa-times"></i>
+                                        </a>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+
+                            <?php if(!empty($search)): ?>
+                                <div class="alert alert-info">
+                                    <i class="icon fas fa-info"></i> Menampilkan hasil pencarian untuk: "<?php echo htmlspecialchars($search); ?>"
+                                </div>
+                            <?php endif; ?>
+
                             <?php if(empty($posts)): ?>
                                 <div class="alert alert-info">
-                                    <i class="icon fas fa-info"></i> Belum ada postingan yang tersedia.
+                                    <i class="icon fas fa-info"></i> <?php echo !empty($search) ? 'Tidak ditemukan postingan yang sesuai dengan pencarian.' : 'Belum ada postingan yang tersedia.'; ?>
                                 </div>
                             <?php else: ?>
                                 <?php foreach($posts as $post): ?>
