@@ -44,6 +44,55 @@ $posts = $stmt->fetchAll();
         .nav-sidebar .nav-item .nav-link.active:hover {
             background-color: #5a6268 !important;
         }
+        .welcome-section {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        .welcome-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .welcome-section p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        .post-card {
+            transition: transform 0.2s;
+            margin-bottom: 1.5rem;
+        }
+        .post-card:hover {
+            transform: translateY(-5px);
+        }
+        .post-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .post-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .about-card {
+            background: #f8f9fa;
+            border: none;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+        }
+        .about-card .card-header {
+            background: #17a2b8;
+            color: white;
+        }
+        .search-box {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
     </style>
 </head>
 <body class="hold-transition sidebar-mini">
@@ -139,18 +188,26 @@ $posts = $stmt->fetchAll();
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-8">
+                            <!-- Welcome Section -->
+                            <div class="welcome-section">
+                                <h1><i class="fas fa-newspaper"></i> Selamat Datang di Simple CMS</h1>
+                                <p>Platform sederhana untuk berbagi cerita dan informasi</p>
+                            </div>
+
                             <!-- Search Form -->
-                            <div class="input-group mb-4">
-                                <input type="text" name="search" class="form-control" placeholder="Cari postingan..." value="<?php echo htmlspecialchars($search); ?>">
-                                <div class="input-group-append">
-                                    <button type="submit" class="btn btn-secondary">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                    <?php if(!empty($search)): ?>
-                                        <a href="index.php" class="btn btn-default">
-                                            <i class="fas fa-times"></i>
-                                        </a>
-                                    <?php endif; ?>
+                            <div class="search-box">
+                                <div class="input-group">
+                                    <input type="text" name="search" class="form-control" placeholder="Cari postingan..." value="<?php echo htmlspecialchars($search); ?>">
+                                    <div class="input-group-append">
+                                        <button type="submit" class="btn btn-secondary">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                        <?php if(!empty($search)): ?>
+                                            <a href="index.php" class="btn btn-default">
+                                                <i class="fas fa-times"></i>
+                                            </a>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
                             </div>
 
@@ -161,23 +218,28 @@ $posts = $stmt->fetchAll();
                             <?php endif; ?>
 
                             <?php if($posts): ?>
-                                <h2 class="mt-4"><?php echo !empty($search) ? 'Hasil Pencarian' : 'Postingan Terbaru'; ?></h2>
+                                <h2 class="mt-4 mb-4">
+                                    <i class="fas fa-list"></i> 
+                                    <?php echo !empty($search) ? 'Hasil Pencarian' : 'Postingan Terbaru'; ?>
+                                </h2>
                                 <?php foreach($posts as $post): ?>
-                                    <div class="card card-outline card-primary">
+                                    <div class="card card-outline card-info post-card">
                                         <div class="card-header">
                                             <h3 class="card-title"><?php echo htmlspecialchars($post['title']); ?></h3>
-                                            <div class="card-tools">
-                                                <span class="badge badge-primary">
-                                                    <i class="fas fa-user"></i> <?php echo htmlspecialchars($post['username']); ?>
-                                                </span>
-                                                <span class="badge badge-info">
-                                                    <i class="fas fa-calendar"></i> <?php echo date('M d, Y', strtotime($post['created_at'])); ?>
-                                                </span>
-                                            </div>
                                         </div>
                                         <div class="card-body">
+                                            <div class="post-meta">
+                                                <span class="text-muted">
+                                                    <i class="fas fa-user"></i> <?php echo htmlspecialchars($post['username']); ?>
+                                                </span>
+                                                <span class="text-muted">
+                                                    <i class="fas fa-calendar"></i> <?php echo date('d M Y', strtotime($post['created_at'])); ?>
+                                                </span>
+                                            </div>
                                             <p><?php echo substr(htmlspecialchars($post['content']), 0, 200) . '...'; ?></p>
-                                            <a href="post.php?id=<?php echo $post['id']; ?>" class="btn btn-primary">Baca Selengkapnya</a>
+                                            <a href="post.php?id=<?php echo $post['id']; ?>" class="btn btn-info">
+                                                <i class="fas fa-eye"></i> Baca Selengkapnya
+                                            </a>
                                         </div>
                                     </div>
                                 <?php endforeach;
@@ -188,12 +250,21 @@ $posts = $stmt->fetchAll();
                             <?php endif; ?>
                         </div>
                         <div class="col-md-4">
-                            <div class="card card-outline card-info">
+                            <div class="card about-card">
                                 <div class="card-header">
-                                    <h3 class="card-title">Tentang</h3>
+                                    <h3 class="card-title"><i class="fas fa-info-circle"></i> Tentang</h3>
                                 </div>
                                 <div class="card-body">
                                     <p>Ini adalah CMS sederhana yang dibangun dengan PHP dan MySQL. Anda dapat membuat, mengedit, dan mengelola konten Anda dengan mudah.</p>
+                                    <div class="mt-4">
+                                        <h5><i class="fas fa-star"></i> Fitur Utama:</h5>
+                                        <ul class="list-unstyled">
+                                            <li><i class="fas fa-check text-success"></i> Buat dan kelola postingan</li>
+                                            <li><i class="fas fa-check text-success"></i> Antarmuka yang responsif</li>
+                                            <li><i class="fas fa-check text-success"></i> Sistem pencarian</li>
+                                            <li><i class="fas fa-check text-success"></i> Manajemen pengguna</li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -207,7 +278,7 @@ $posts = $stmt->fetchAll();
             <div class="float-right d-none d-sm-block">
                 <b>Version</b> 1.0.0
             </div>
-            <strong>Copyright &copy; 2024 <a href="index.php">Simple CMS</a>.</strong> All rights reserved.
+            <strong>Copyright &copy; 2025 <a href="index.php">Raka Gemilang F.A</a>.</strong> All rights reserved.
         </footer>
     </div>
 
