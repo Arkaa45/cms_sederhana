@@ -7,7 +7,6 @@ $search = isset($_GET['search']) ? $_GET['search'] : '';
 $where = '';
 $params = [];
 
-$asd=sadasd
 
 if (!empty($search)) {
     $where = "WHERE posts.title LIKE ? OR posts.content LIKE ? OR users.username LIKE ?";
