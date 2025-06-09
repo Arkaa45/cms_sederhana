@@ -27,12 +27,18 @@ class Post {
                   JOIN users ON posts.user_id = users.id 
                   $where
                   ORDER BY posts.created_at DESC 
-                  LIMIT ?";
-        
-        $params[] = $limit;
+                  LIMIT :limit";
         
         $stmt = $this->conn->prepare($query);
-        $stmt->execute($params);
+        
+        if (!empty($params)) {
+            foreach ($params as $key => $value) {
+                $stmt->bindValue($key + 1, $value);
+            }
+        }
+        
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->execute();
         
         return $stmt;
     }
