@@ -10,9 +10,12 @@ require_once __DIR__ . '/../app/controllers/UserController.php';
 
 // Get the requested URL
 $request_uri = $_SERVER['REQUEST_URI'];
-$base_path = '/cms_sederhana/public/';
+$base_path = '/cms_sederhana/';
 $path = str_replace($base_path, '', $request_uri);
 $path = parse_url($path, PHP_URL_PATH);
+
+// Remove 'public/' from the path if it exists
+$path = str_replace('public/', '', $path);
 
 // Simple routing
 switch ($path) {

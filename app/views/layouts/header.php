@@ -1,5 +1,4 @@
 <?php
-session_start();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -83,10 +82,10 @@ session_start();
                     <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
                 </li>
                 <li class="nav-item d-none d-sm-inline-block">
-                    <a href="index.php" class="nav-link">Beranda</a>
+                    <a href="/cms_sederhana/" class="nav-link">Beranda</a>
                 </li>
                 <li class="nav-item d-none d-sm-inline-block">
-                    <a href="posts.php" class="nav-link">Postingan</a>
+                    <a href="/cms_sederhana/posts" class="nav-link">Postingan</a>
                 </li>
             </ul>
 
@@ -94,23 +93,23 @@ session_start();
             <ul class="navbar-nav ml-auto">
                 <?php if(isset($_SESSION['user_id'])): ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="admin/dashboard.php">
+                        <a class="nav-link" href="/cms_sederhana/admin/dashboard">
                             <i class="fas fa-tachometer-alt"></i> Dashboard
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="logout.php">
+                        <a class="nav-link" href="/cms_sederhana/logout">
                             <i class="fas fa-sign-out-alt"></i> Logout
                         </a>
                     </li>
                 <?php else: ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="login.php">
+                        <a class="nav-link" href="/cms_sederhana/login">
                             <i class="fas fa-sign-in-alt"></i> Login
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="register.php">
+                        <a class="nav-link" href="/cms_sederhana/register">
                             <i class="fas fa-user-plus"></i> Register
                         </a>
                     </li>
@@ -121,7 +120,7 @@ session_start();
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
-            <a href="index.php" class="brand-link">
+            <a href="/cms_sederhana/" class="brand-link">
                 <i class="fas fa-clipboard-list brand-image img-circle elevation-3" style="opacity: .8; font-size: 1.5rem; padding: 0.5rem;"></i>
                 <span class="brand-text font-weight-light">Simple CMS</span>
             </a>
@@ -132,13 +131,13 @@ session_start();
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                         <li class="nav-item">
-                            <a href="index.php" class="nav-link active">
+                            <a href="/cms_sederhana/" class="nav-link active">
                                 <i class="nav-icon fas fa-home"></i>
                                 <p>Beranda</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="posts.php" class="nav-link">
+                            <a href="/cms_sederhana/posts" class="nav-link">
                                 <i class="nav-icon fas fa-file-alt"></i>
                                 <p>Postingan</p>
                             </a>

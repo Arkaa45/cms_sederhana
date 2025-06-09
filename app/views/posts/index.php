@@ -25,7 +25,7 @@
 
                     <!-- Search Form -->
                     <div class="search-box">
-                        <form action="index.php" method="GET">
+                        <form action="/cms_sederhana/" method="GET">
                             <div class="input-group">
                                 <input type="text" name="search" class="form-control" placeholder="Cari postingan..." value="<?php echo htmlspecialchars($search); ?>">
                                 <div class="input-group-append">
@@ -33,7 +33,7 @@
                                         <i class="fas fa-search"></i>
                                     </button>
                                     <?php if(!empty($search)): ?>
-                                        <a href="index.php" class="btn btn-default">
+                                        <a href="/cms_sederhana/" class="btn btn-default">
                                             <i class="fas fa-times"></i>
                                         </a>
                                     <?php endif; ?>
@@ -68,7 +68,7 @@
                                         </span>
                                     </div>
                                     <p><?php echo substr(htmlspecialchars($post['content']), 0, 200) . '...'; ?></p>
-                                    <a href="post.php?id=<?php echo $post['id']; ?>" class="btn btn-info">
+                                    <a href="/cms_sederhana/post?id=<?php echo $post['id']; ?>" class="btn btn-info">
                                         <i class="fas fa-eye"></i> Baca Selengkapnya
                                     </a>
                                 </div>
@@ -90,7 +90,7 @@
                         <div class="card-body">
                             <p>Simple CMS adalah platform sederhana untuk berbagi cerita dan informasi. Anda dapat membuat, mengedit, dan menghapus postingan sesuai kebutuhan.</p>
                             <?php if(isset($_SESSION['user_id'])): ?>
-                                <a href="create_post.php" class="btn btn-info btn-block">
+                                <a href="/cms_sederhana/create_post" class="btn btn-info btn-block">
                                     <i class="fas fa-plus"></i> Buat Postingan Baru
                                 </a>
                             <?php endif; ?>
